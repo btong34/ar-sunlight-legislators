@@ -1,7 +1,12 @@
 require 'rake'
 require 'rspec/core/rake_task'
 require_relative 'db/config'
+require_relative 'lib/sunlight_legislators_importer'
 
+desc "start irb session"
+task "console" do
+  exec("irb -r ./app/main.rb")
+end
 
 desc "create the database"
 task "db:create" do
@@ -26,6 +31,14 @@ desc 'Retrieves the current schema version number'
 task "db:version" do
   puts "Current version: #{ActiveRecord::Migrator.current_version}"
 end
+
+desc 'import data into database'
+task "db:seed" do
+  SunlightLegislatorsImporter.import
+end
+
+desc 'drop and migrate'
+task "dropmigrate" => ["db:drop", "db:create", "db:migrate"]
 
 desc "Run the specs"
 RSpec::Core::RakeTask.new(:specs)
